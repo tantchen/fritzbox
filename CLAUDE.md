@@ -8,8 +8,9 @@ successor of `@tantchen/fritzapi`. First consumer: `~/Private/fritz-thermostat` 
 - Private package, single maintainer. Work on `main`, commit each finished logical change without
   asking. Pushing, tagging and publishing are done by the maintainer – never publish or push tags.
 - Releases: a pushed tag `v<version>` is published by `.github/workflows/publish.yml` (trusted
-  publishing, provenance, no token). `scripts/publish.local.sh` (git-ignored, token from
-  1Password) only existed for the first version. GitHub actions stay pinned to commit SHAs.
+  publishing, provenance, no token). `scripts/publish.local.sh` (git-ignored) is the manual
+  fallback: web login in the container with passkey, staged publish that has to be approved on
+  npmjs.com, tag push. It must run in a real terminal (npm prints URLs and waits). GitHub actions stay pinned to commit SHAs.
 - Development **only inside Docker** (`compose.yaml`): never run `npm install`, `npm ci`, `npx`,
   `node` or package code on the host; use `docker compose exec dev …`.
 - **No runtime dependencies.** Supply chain: before adding any dependency (also dev), verify name,
