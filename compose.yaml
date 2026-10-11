@@ -1,0 +1,12 @@
+# Development only: the sources are bind-mounted, node_modules lives in a named volume so
+# nothing is ever installed on the host.
+name: fritzbox-dev
+services:
+  dev:
+    build: .
+    init: true
+    volumes:
+      - .:/home/node/pkg
+      - node_modules:/home/node/pkg/node_modules
+volumes:
+  node_modules:

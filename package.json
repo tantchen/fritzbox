@@ -1,0 +1,46 @@
+{
+  "name": "@tantchen/fritzbox",
+  "version": "0.1.0",
+  "description": "Typed FRITZ!Box client without runtime dependencies: PBKDF2 session login, AHA smart home thermostats, TR-064 host list",
+  "keywords": [
+    "fritzbox",
+    "fritz!box",
+    "avm",
+    "aha",
+    "smarthome",
+    "thermostat",
+    "dect",
+    "tr-064"
+  ],
+  "author": "Gerald Uhlig",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test \"test/**/*.test.ts\"",
+    "smoke": "node scripts/smoke.ts",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "typescript": "~5.9.3"
+  }
+}
