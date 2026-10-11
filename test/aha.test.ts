@@ -1,5 +1,6 @@
 import {describe, it} from 'node:test'
 import assert from 'node:assert/strict'
+import {readFileSync} from 'node:fs'
 import {decodeTarget, encodeTarget, parseThermostats} from '../src/aha.ts'
 import {FritzBox} from '../src/fritzbox.ts'
 import {INVALID_SID} from '../src/session.ts'
@@ -161,5 +162,30 @@ describe('FritzBox AHA commands', () => {
             assert.ok(!error.message.includes('0000000000000001'), error.message)
             return true
         })
+    })
+})
+
+describe('parseThermostats with a recorded answer', () => {
+    // getdevicelistinfos of a FRITZ!Box 7590 AX, FRITZ!OS 8.25, recorded with
+    // `npm run smoke -- --record` on 2026-10-11; identifiers replaced, values original
+    const recorded = readFileSync(new URL('./fixtures/devicelist.xml', import.meta.url), 'utf8')
+    const thermostats = parseThermostats(recorded)
+
+    it('finds the four thermostats and skips the group', () => {
+        assert.deepEqual(thermostats.map(t => t.name),
+            ['Wohnzimmer Fenster L', 'Wohnzimmer Fenster R', 'Wohnzimmer Tür', 'Bad'])
+    })
+
+    it('reads the values with their real types', () => {
+        const [left, , , bath] = thermostats
+        assert.equal(left.ain, '123450000001')
+        assert.equal(left.present, true)
+        assert.equal(left.measuredCelsius, 21)
+        assert.deepEqual(left.target, {mode: 'temperature', celsius: 22})
+        assert.deepEqual(left.comfort, {mode: 'temperature', celsius: 21.5})
+        assert.deepEqual(left.economy, {mode: 'temperature', celsius: 17})
+        assert.equal(left.battery, 20)
+        assert.equal(left.nextChange, null, 'endperiod 0 means no scheduled change')
+        assert.deepEqual(bath.target, {mode: 'on'})
     })
 })

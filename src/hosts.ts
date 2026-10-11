@@ -56,11 +56,14 @@ export class Hosts {
 
     constructor(http: HttpClient, options: HostsOptions) {
         this.http = http
+        // ?? instead of a spread: an option passed as undefined must not hide the default
         this.options = {
-            port: DEFAULT_TR064_PORT,
-            listCacheMs: 60_000,
-            maxParallelRequests: 8,
-            ...options,
+            host: options.host,
+            username: options.username,
+            password: options.password,
+            port: options.port ?? DEFAULT_TR064_PORT,
+            listCacheMs: options.listCacheMs ?? 60_000,
+            maxParallelRequests: options.maxParallelRequests ?? 8,
         }
     }
 

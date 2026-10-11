@@ -142,6 +142,14 @@ describe('Hosts', () => {
         assert.match(fake.requests[1].headers['authorization'], /^Digest username="smarthome", realm="F!Box SOAP-Auth"/)
     })
 
+    it('falls back to the default port when the option is undefined', async () => {
+        const {FritzBox} = await import('../src/fritzbox.ts')
+        const box = new FritzBox({url: 'http://192.168.178.1', username: 'u', password: 'p', tr064Port: undefined})
+        assert.equal(box.hosts.controlUrl, 'http://192.168.178.1:49000/upnp/control/hosts')
+        const custom = new FritzBox({url: 'http://fritz.box:8080', username: 'u', password: 'p', tr064Port: 49443})
+        assert.equal(custom.hosts.controlUrl, 'http://fritz.box:49443/upnp/control/hosts')
+    })
+
     it('builds the digest response of the RFC 2617 example', () => {
         const header = buildDigestHeader('Mufasa', 'Circle Of Life',
             'Digest realm="testrealm@host.com", qop="auth,auth-int", ' +
