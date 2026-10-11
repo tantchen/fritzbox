@@ -70,6 +70,20 @@ docker compose exec -e FRITZ_USER=… -e FRITZ_PASSWORD=… dev npm run smoke
 docker compose exec -e FRITZ_USER=… -e FRITZ_PASSWORD=… dev npm run smoke -- --record   # saves the raw device list
 ```
 
+### Releases
+
+Versions are published by `.github/workflows/publish.yml` when a tag `v<version>` is pushed:
+npm trusts the workflow through OIDC (trusted publishing), no npm token exists, and every
+version carries a provenance attestation of the commit it was built from.
+
+```bash
+# bump "version" in package.json, add the CHANGELOG section, commit, then
+git tag -a v0.2.0 -m "@tantchen/fritzbox 0.2.0" && git push origin main v0.2.0
+```
+
+`.github/workflows/ci.yml` runs typecheck, tests and build on every push. Third party actions
+are pinned to commit SHAs.
+
 ### Specification
 
 - AVM, *AHA-HTTP-Interface* – <https://fritz.com/en/pages/interfaces>

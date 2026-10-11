@@ -1,0 +1,45 @@
+# Publishes a version tag (v1.2.3) to npm with trusted publishing: npm trusts this workflow
+# through OIDC, there is no npm token anywhere, and every version gets a provenance
+# attestation that links it to the commit it was built from.
+#
+# One-time setup on npmjs.com: package settings -> Trusted Publisher -> GitHub Actions,
+# repository tantchen/fritzbox, workflow publish.yml, environment npm.
+name: publish
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - run: npm ci --ignore-scripts
+      - name: Tag matches package version
+        run: |
+          version=$(node -p "require('./package.json').version")
+          test "v$version" = "$GITHUB_REF_NAME" || { echo "tag $GITHUB_REF_NAME != v$version"; exit 1; }
+      - name: Skip versions already on npm
+        id: check
+        run: |
+          name=$(node -p "require('./package.json').name")
+          version=$(node -p "require('./package.json').version")
+          if npm view "$name@$version" version >/dev/null 2>&1; then
+            echo "$name@$version is on npm already"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+      # prepublishOnly runs typecheck, tests and build
+      - if: steps.check.outputs.skip != 'true'
+        run: npm publish --access public
