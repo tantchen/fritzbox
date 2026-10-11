@@ -14,6 +14,14 @@
   ],
   "author": "Gerald Uhlig",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tantchen/fritzbox.git"
+  },
+  "homepage": "https://github.com/tantchen/fritzbox#readme",
+  "bugs": {
+    "url": "https://github.com/tantchen/fritzbox/issues"
+  },
   "type": "module",
   "exports": {
     ".": {
